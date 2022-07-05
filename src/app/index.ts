@@ -4,7 +4,7 @@ import { createStars } from "./entities/stars";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { createPlayer } from "./entities/player";
 import { Scene, PerspectiveCamera, WebGLRenderer, Clock } from "three";
-import { ClientToServerEvents, Entity, EntityData } from "./types";
+import { Entity, EntityData } from "./types";
 import { socket } from "./socket";
 
 
@@ -32,8 +32,6 @@ const createGameState = (): GameState => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
   const controls = new OrbitControls(camera, renderer.domElement);
-  //controls.enableKeys = true; //older versions
-  
   controls.enableDamping = true
   controls.dampingFactor = 0.05
   controls.maxPolarAngle = 10000
@@ -57,15 +55,18 @@ const createGameState = (): GameState => {
     objects: [],
   };
 };
-let updateData: EntityData[]
+let serverState: EntityData[]
 
 const start = () => {
+
+  //get updates from other player from server and store them and handle in next render cycle
+  socket.on('update', (data) => serverState = data);
+
   const state = createGameState();
   state.controls.listenToKeyEvents(document.body);
   const player = createPlayer(state)
-  socket.emit("playerJoined", generateUUID(), {id: player.id, position: player.mesh.position})
-  socket.on('update', (data) => updateData = data);
-  state.player = player;
+  state.player = player
+  
   state.objects.push(...createStars(state));
   state.objects.push(...Object.values(enemies))
 
@@ -73,17 +74,19 @@ const start = () => {
     window.requestAnimationFrame(update);
     state.controls.target.set(player.mesh.position.x, player.mesh.position.y, player.mesh.position.z)
     state.controls.update();
-    updateEnemies(state, updateData)
+
+    //update enemies based on server data
+    updateEnemies(state, serverState)
+
+    //update the game objects: position ect.
     state.objects.forEach((obj) => {
       if(obj.update)obj.update(state)
-    });     
+    });  
     if(state.player?.update)state.player.update(state) 
-    console.log(state.objects)
     render()
   };
   const render = () => {
     state.renderer.render(state.scene, state.camera);
-    
   }
   update();
 };

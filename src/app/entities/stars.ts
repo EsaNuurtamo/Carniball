@@ -1,4 +1,4 @@
-import { generateUUID } from 'three/src/math/MathUtils'
+import { generateUUID } from "three/src/math/MathUtils";
 import { GameState } from "../index";
 import { Entity } from "../types";
 import { Mesh } from "three";
@@ -12,28 +12,24 @@ export const createBallMesh = (): Mesh => {
   return mesh;
 };
 
-export const createStars = ({
-  scene,
-  objects,
-  player
-}: GameState): Entity[] => {
+export const createStars = ({ scene }: GameState): Entity[] => {
   const balls: Entity[] = [];
 
-  //create random balls 
+  //create stars at random places
   for (let i = 0; i < 100; i++) {
     const mesh = createBallMesh();
-    const [x, y, z] = [0,0,0];
-    const drawDistance = 100
-    mesh.translateX(x + (Math.random() * drawDistance - drawDistance/2));
-    mesh.translateY(y + (Math.random() * drawDistance - drawDistance/2));
-    mesh.translateZ(z + (Math.random() * drawDistance - drawDistance/2));
+    const [x, y, z] = [0, 0, 0];
+    const drawDistance = 100;
+    mesh.translateX(x + (Math.random() * drawDistance - drawDistance / 2));
+    mesh.translateY(y + (Math.random() * drawDistance - drawDistance / 2));
+    mesh.translateZ(z + (Math.random() * drawDistance - drawDistance / 2));
     balls.push({
       id: generateUUID(),
       mesh,
       remove: mesh.removeFromParent,
-      update: () => null
+      update: () => null,
     });
   }
-  scene.add(...balls.map(el => el.mesh));
+  scene.add(...balls.map((el) => el.mesh));
   return balls;
 };

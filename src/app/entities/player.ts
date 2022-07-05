@@ -1,17 +1,18 @@
 import { generateUUID } from 'three/src/math/MathUtils'
 import { GameState } from "./../index";
 import { Entity } from "./../types";
-import { Mesh, MeshStandardMaterial, Spherical, Vector3 } from "three";
+import { Mesh, Vector3 } from "three";
 import { MeshBasicMaterial, SphereGeometry } from "three";
-import { randomUUID } from "crypto";
 import { socket } from '../socket';
 
-export const createPlayer = ({ scene, clock, camera, controls, player }: GameState): Entity => {
+export const createPlayer = ({ scene, clock, camera }: GameState): Entity => {
   const id = generateUUID()
   const geometry = new SphereGeometry(1, 32, 16); // (radius, widthSegments, heightSegments)
   const material = new MeshBasicMaterial({ color: 0xffff00 });
   const mesh = new Mesh(geometry, material);
   scene.add(mesh);
+
+  socket.emit('playerJoined', generateUUID(), {id, position: mesh.position})
 
   const update = () => {
     const delta = clock.getDelta(); // seconds
