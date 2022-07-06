@@ -7,7 +7,8 @@
   "scripts": {
     "develop": "PORT=3000 NODE_ENV=development concurrently \"tsc --watch\" \"nodemon -q dist/server.js\"",
     "watch": "parcel watch src/index.html",
-    "build": "parcel build src/index.html"
+    "build": "parcel build src/index.html && tsc",
+    "start": "node dist/server.js"
   },
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "5.30.5",
