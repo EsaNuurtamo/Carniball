@@ -9,7 +9,7 @@ Techstack: Three.js, node.js, express, socket.io, typescript, parcel
 - `yarn watch` - on a seperate tab to bundle frontend with parcel when files are changed
 
 ## Building and deploying
-The project is deployed to heroku. 
+Now master branch is automatically pushed to heroku when PR is merged. But you can read here how easy it is to deploy to heroku.
 
 Install heroku CLI:
 `brew install heroku`
@@ -24,3 +24,5 @@ Add heroku as remote with the CLI:
 
 Push to heroku (I'll add automatic deployment to heroku from github's main branch)
 `git push heroku main`
+
+Heroku has node environment so you only have to have `build` and `start` scripts configured and it will also install all dependencies.
