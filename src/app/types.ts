@@ -6,6 +6,7 @@ export interface Entity {
   mesh: Mesh,
   remove: () => void,
   update?: (state?: GameState) => void
+  radius: number
 }
 
 export interface EntityData {
@@ -19,11 +20,9 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
-  playerJoined: (id: string, data: EntityData) => void;
-}
-
-export interface ClientToServerEvents {
-  playerMoved: (id: string, data: EntityData) => void;
+  playerJoined: (data: EntityData) => void;
+  playerMoved: (data: EntityData) => void;
+  playerDied: (data: EntityData) => void
 }
 
 export interface InterServerEvents {

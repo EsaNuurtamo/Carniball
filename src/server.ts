@@ -11,33 +11,33 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEve
 const objects: Record<string, EntityData> = {}
 
 app.use(express.static(path.join(__dirname, '../dist')))
+app.use(express.static(path.join(__dirname, '../assets')))
 
 io.on('connection', (socket) => {
 
   //emit updated state from server every 500ms
   setInterval(() => {
-    console.log(objects)
     socket.emit('update', Object.values(objects));
-  },500);
+  },1000/30);
 
   console.log('user connected');
 
   socket.on('disconnect', () => {
     if(Object.values(objects).length <=0){
-      io.close()
+      io.disconnectSockets(true)
     }
     console.log('user disconnected');
   });
 
   //when player joins add the player 
-  socket.on('playerJoined', (__id, player) => {
+  socket.on('playerJoined', (player) => {
     console.log('Player joined: ', player.id)
     objects[player.id] = player
   });
 
   //when player moves update the position
-  socket.on('playerMoved', (__id, player) => {
-    //console.log('Player moved: ', id)
+  socket.on('playerMoved', (player) => {
+    console.log(`Player ${player.id} moved: ${player.position}`)
     objects[player.id] = player
   });
 });

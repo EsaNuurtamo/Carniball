@@ -1,11 +1,11 @@
 import { enemies, updateEnemies } from './entities/enemies'
-import { generateUUID } from 'three/src/math/MathUtils'
 import { createStars } from "./entities/stars";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { createPlayer } from "./entities/player";
+import { createPlayer, checkPlayerCollisions } from "./entities/player";
 import { Scene, PerspectiveCamera, WebGLRenderer, Clock } from "three";
 import { Entity, EntityData } from "./types";
 import { socket } from "./socket";
+import { createText } from './utils/gui';
 
 
 export interface GameState {
@@ -37,14 +37,14 @@ const createGameState = (): GameState => {
   controls.maxPolarAngle = 10000
   controls.maxAzimuthAngle = 10000
   controls.keys = {
-    LEFT: "KeyA", //left arrow
-    UP: "KeyW", // up arrow
-    RIGHT: "KeyD", // right arrow
-    BOTTOM: "KeyS", // down arrow
+    LEFT: "KeyA",
+    UP: "KeyW",
+    RIGHT: "KeyD",
+    BOTTOM: "KeyS",
   };
-  controls.maxDistance = 20
+  controls.maxDistance = 15
   controls.keyPanSpeed = 50
-  camera.position.set(0, 0, -10);
+  camera.position.set(0, 0, -5);
   return {
     clock,
     scene,
@@ -64,7 +64,7 @@ const start = () => {
 
   const state = createGameState();
   state.controls.listenToKeyEvents(document.body);
-  const player = createPlayer(state)
+  const player = createPlayer(state, 2)
   state.player = player
   
   state.objects.push(...createStars(state));
@@ -72,17 +72,19 @@ const start = () => {
 
   const update = () => {
     window.requestAnimationFrame(update);
+    
     state.controls.target.set(player.mesh.position.x, player.mesh.position.y, player.mesh.position.z)
     state.controls.update();
-
-    //update enemies based on server data
-    updateEnemies(state, serverState)
-
     //update the game objects: position ect.
     state.objects.forEach((obj) => {
       if(obj.update)obj.update(state)
     });  
     if(state.player?.update)state.player.update(state) 
+    console.log(state.objects)
+    //update enemies based on server data
+    updateEnemies(state, serverState)
+    checkPlayerCollisions(player, state.objects)
+    createText(player.radius)
     render()
   };
   const render = () => {
