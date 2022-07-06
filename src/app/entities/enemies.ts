@@ -1,7 +1,7 @@
 import { EntityData } from "./../types";
 import { GameState } from "./../index";
 import { Entity } from "../types";
-import { Mesh } from "three";
+import { Mesh, TextureLoader } from "three";
 import { MeshBasicMaterial, SphereGeometry } from "three";
 import { socket } from "../socket";
 
@@ -11,12 +11,16 @@ const updatePosition = (enemy: Entity, data: EntityData) => {
   enemy.mesh.position.set(data.position.x, data.position.y, data.position.z);
 };
 
+const material = new MeshBasicMaterial({
+  map: new TextureLoader().load("Black_Stone_Texture.jpeg"),
+});
+
 export const createEnemy = (
   { scene, objects }: GameState,
   radius: number
 ): Entity => {
   const geometry = new SphereGeometry(radius, 32, 16); // (radius, widthSegments, heightSegments)
-  const material = new MeshBasicMaterial({ color: 0xffff00 });
+  
   const mesh = new Mesh(geometry, material);
   scene.add(mesh);
   const id = mesh.uuid;
@@ -24,7 +28,6 @@ export const createEnemy = (
     id,
     mesh,
     remove: () => {
-      console.log("remove: ", id)
       objects.slice(
         objects.findIndex((el) => el.id === id),
         1
@@ -45,7 +48,7 @@ export const updateEnemies = (
   entities.forEach((data) => {
     if (data.id === state.player?.id) return;
     if (!enemies[data.id]) {
-      const newEnemy = createEnemy(state, 2);
+      const newEnemy = createEnemy(state, data.radius);
       enemies[data.id] = newEnemy;
       state.objects.push(newEnemy);
     }

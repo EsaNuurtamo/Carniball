@@ -6,12 +6,18 @@ export interface Entity {
   mesh: Mesh;
   remove: () => void;
   update?: (state?: GameState) => void;
+  direction?: Vector3
   radius: number;
+}
+
+export interface Player extends Entity{
+  direction: Vector3
 }
 
 export interface EntityData {
   id: string;
   position: Vector3;
+  radius: number;
 }
 
 export interface ServerToClientEvents {
