@@ -80,7 +80,6 @@ const start = () => {
       if(obj.update)obj.update(state)
     });  
     if(state.player?.update)state.player.update(state) 
-    console.log(state.objects)
     //update enemies based on server data
     updateEnemies(state, serverState)
     checkPlayerCollisions(player, state.objects)
