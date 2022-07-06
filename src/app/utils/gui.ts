@@ -1,3 +1,4 @@
+//TODO: start using proper GUI library
 export const createText = (size: number) => {
   const text2 = document.createElement("div");
   text2.style.position = "absolute";

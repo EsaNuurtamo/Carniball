@@ -7,14 +7,14 @@ export const createBallMesh = (radius: number): Mesh => {
   const geometry = new SphereGeometry(radius, 10, 8); // (radius, widthSegments, heightSegments)
   const material: Material = new MeshBasicMaterial({ color: 0xfffff0 });
   const mesh = new Mesh(geometry, material);
-
   return mesh;
 };
 
+//TODO: generate more of these and add logic for draw distance
 export const createStars = ({ scene, objects }: GameState): Entity[] => {
   const balls: Entity[] = [];
 
-  //create stars at random places
+  //create start to random locations
   for (let i = 0; i < 100; i++) {
     const radius = Math.random() * 2;
     const mesh = createBallMesh(radius);
