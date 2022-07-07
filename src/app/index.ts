@@ -5,7 +5,7 @@ import { createPlayer, checkPlayerCollisions } from "./entities/player";
 import { Scene, PerspectiveCamera, WebGLRenderer, Clock } from "three";
 import { Entity, EntityData, Player } from "./types";
 import { socket } from "./socket";
-import { createGui } from "./utils/gui";
+import { createGui, updateScore } from "./utils/gui";
 
 export interface GameState {
   clock: Clock;
@@ -91,7 +91,7 @@ const start = () => {
     //update enemies based on server data
     updateEnemies(state, serverState);
     checkPlayerCollisions(state);
-    
+    updateScore(state.player.radius)
     render();
   };
   const render = () => {
