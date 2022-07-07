@@ -43,6 +43,7 @@ export const createPlayer = (
   socket.emit("playerJoined", { id, position: mesh.position, radius });
   const update = () => {
     const delta = clock.getDelta(); // seconds
+    console.log('delta: ', delta)
     //move object
     const moveDistance = 10 * delta; // n pixels per second
     const dir = new Vector3(mesh.position.x, mesh.position.y, mesh.position.z);

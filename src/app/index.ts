@@ -5,7 +5,7 @@ import { createPlayer, checkPlayerCollisions } from "./entities/player";
 import { Scene, PerspectiveCamera, WebGLRenderer, Clock } from "three";
 import { Entity, EntityData, Player } from "./types";
 import { socket } from "./socket";
-import { createText } from "./utils/gui";
+import { createGui } from "./utils/gui";
 
 export interface GameState {
   clock: Clock;
@@ -56,7 +56,7 @@ const createGameState = (): GameState => {
     objects: [],
   };
 };
-let serverState: EntityData[];
+let serverState: EntityData[] = [];
 socket.on("update", (data) => (serverState = data));
  
 const start = () => {
@@ -68,7 +68,7 @@ const start = () => {
   state.player = player;
   state.objects.push(...createStars(state));
   state.objects.push(...Object.values(enemies));
-
+  createGui()
   const update = () => {
     window.requestAnimationFrame(update);
     
@@ -92,7 +92,6 @@ const start = () => {
     updateEnemies(state, serverState);
     checkPlayerCollisions(state);
     
-    createText(player.radius);
     render();
   };
   const render = () => {
