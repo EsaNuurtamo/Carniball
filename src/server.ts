@@ -33,8 +33,8 @@ io.on('connection', (socket) => {
   //when player disconnects get the player by socket id and emit event to clients so that the player is removed
   socket.on('disconnect', () => {
     const player = playerBySocket[socket.id]
-    console.log('User disconnected: ', player.id);
-    delete objects[player.id]
+    console.log('User disconnected: ', player?.id);
+    if(player)delete objects[player.id]
     delete playerBySocket[socket.id]
     emitQuit(player)
     if(Object.values(objects).length <=0){
