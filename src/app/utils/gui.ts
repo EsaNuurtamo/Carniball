@@ -18,5 +18,5 @@ export const createGui = () => {
 
 export const updateScore = (size: number) => {
   const gui = document.getElementById("score");
-  if (gui) gui.innerText = Math.round(size / 100) * 100 + "";
+  if (gui) gui.innerHTML = Math.round(size * 100)/ 100 + "";
 };
