@@ -12,7 +12,7 @@ export const createGui = () => {
   text2.style.top = "20px";
   text2.style.backgroundColor = "white";
   text2.style.fontFamily = "'Roboto', sans-serif";
-  text2.innerHTML = `Score: <br> <div id="score"> 0 </div>`;
+  text2.innerHTML = `Score: <br> <span id="score"> 0 </span>`;
   document.body.appendChild(text2);
 };
 

@@ -78,7 +78,7 @@ io.on("connection", (socket) => {
   //when player moves update the position
   socket.on("playerMoved", (player) => {
     console.log("Player moved: ", player.id);
-    players[player.id] = player;
+    players[socket.id] = player;
   });
 });
 
