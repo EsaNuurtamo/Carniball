@@ -7,52 +7,62 @@ const app = express();
 const server = createServer(app);
 const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(server);
 
-//all game state kept here
-const objects: Record<string, EntityData> = {}
-
-const playerBySocket: Record<string, EntityData> = {}
-
 //serve static html and js files
 app.use(express.static(path.join(__dirname, '../dist')))
-
 //serve assets like textures
 app.use(express.static(path.join(__dirname, '../assets')))
 
+//all game state kept here
+const players: Record<string, EntityData> = {}
+
 //player quit event
 const emitQuit = (entity: EntityData) => io.emit('playerQuit', entity)
+//emit updated state from server every 500ms
+
+const gameInfo = {
+  isRunning: false,
+  updateInterval: 1000/30
+}
+
+const stateUpdateLoop = () => {
+  gameInfo.isRunning = true;
+
+  // Reduce usage by only send state update if state has changed
+  io.emit('update', Object.values(players))
+
+  //only emit the state if there is players left
+  if (Object.values(players).length > 0) {
+    setTimeout(stateUpdateLoop, gameInfo.updateInterval);
+  } else {
+    // Stop the loop if there are no players left
+    gameInfo.isRunning = false;
+  }
+}
 
 io.on('connection', (socket) => {
-
-  //emit updated state from server every 500ms
-  setInterval(() => {
-    socket.emit('update', Object.values(objects));
-  },1000/30);
 
   console.log('user connected to socket: ', socket.id);
 
   //when player disconnects get the player by socket id and emit event to clients so that the player is removed
   socket.on('disconnect', () => {
-    const player = playerBySocket[socket.id]
-    console.log('User disconnected: ', player?.id);
-    if(player)delete objects[player.id]
-    delete playerBySocket[socket.id]
+    const player = players[socket.id]
+    console.log('User disconnected: ', player.id);
     emitQuit(player)
-    if(Object.values(objects).length <=0){
-      io.disconnectSockets(true)
-    }
+    delete players[socket.id] 
   });
 
   //when player joins add the player and map his socket id
   socket.on('playerJoined', (player) => {
     console.log('Player joined: ', player.id)
-    objects[player.id] = player
-    playerBySocket[socket.id] = player
+    players[socket.id] = player
+    if (!gameInfo.isRunning) {
+      stateUpdateLoop();
+    }
   });
 
   //when player moves update the position
   socket.on('playerMoved', (player) => {
-    //console.debug(`Player ${player.id} moved: ${player.position}`)
-    objects[player.id] = player
+    players[player.id] = player
   });
 });
 
