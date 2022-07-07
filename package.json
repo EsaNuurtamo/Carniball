@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@types/express": "4.17.13",
+    "@types/jquery": "^3.5.14",
     "@types/node": "18.0.1",
     "@types/three": "0.141.0",
     "assert": "2.0.0",
